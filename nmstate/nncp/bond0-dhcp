@@ -1,0 +1,22 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: bond0-dhcp
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+    - name: bond0-dhcp
+      type: bond
+      state: up
+      ipv4:
+        dhcp: true
+        enabled: true
+      link-aggregation:
+        mode: balance-rr # [0]balance-rr, [1]active-backup, [2]balance-xor, [3]broadcast, [4]802.3ad, [5]balance-tlb, [5]balance-alb. ocp not supported(funcionam, ex:0 mas nao recomendado ou suportado.)[0,3,5,6] ocp supported[1,2,4]
+        options:
+          miimon: '140'
+        port:
+        - enp6s0
+        - enp7s0

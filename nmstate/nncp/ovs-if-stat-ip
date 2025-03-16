@@ -1,0 +1,24 @@
+# A interface OVS esta conectada a br-ex. A interface tem IP estatico e faz parte da rede externa a qual a br-ex esta conectada
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: ovs-if-stat-ip
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+      - controller: br-ex
+        ipv4:
+          address:
+            - ip: 192.168.130.12
+              prefix-length: 24
+          auto-dns: true
+          auto-gateway: true
+          auto-route-metric: 48
+          auto-routes: true
+          dhcp: false
+          enabled: true
+        name: ovs-if-stat-ip
+        state: up
+        type: ovs-interface

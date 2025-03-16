@@ -1,0 +1,17 @@
+# Cria uma interface OVS que esta conectada a br-ex. A interface tem DHCP habilitado e recebe o IP automaticamente de um servidor DHCP externo, no caso, da rede virtualdo CRC
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: ovs-if-dhcp
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+      - controller: br-ex
+        ipv4:
+          dhcp: true
+          enabled: true
+        name: ovs-if-dhcp
+        state: up
+        type: ovs-interface

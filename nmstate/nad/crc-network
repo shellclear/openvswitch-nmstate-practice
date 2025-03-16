@@ -1,0 +1,17 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+ annotations:
+   description: Attach to crc libvirt network segment
+ name: crc-network
+ namespace: openshift-cnv
+spec:
+ config: |-
+   {
+     "cniVersion": "0.4.0",
+     "name": "libvirt-crc",
+     "type": "ovn-k8s-cni-overlay",
+     "topology": "localnet",
+     "netAttachDefName": "openshift-cnv/crc-network",
+     "ipam": {}
+   }

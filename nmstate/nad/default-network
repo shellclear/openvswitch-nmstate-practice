@@ -1,0 +1,17 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+ annotations:
+   description: Attach to default libvirt network segment
+ name: default-network
+ namespace: openshift-cnv
+spec: # o uso da string "default" no atributo name abaixo, fez com que a maquina nao iniciasse. tive que mudar o nome para default0 ou libvirt-default e funcionou.
+ config: |-
+   {
+     "cniVersion": "0.4.0",
+     "name": "libvirt-default",
+     "type": "ovn-k8s-cni-overlay",
+     "topology": "localnet",
+     "netAttachDefName": "openshift-cnv/default-network",
+     "ipam": {}
+   }

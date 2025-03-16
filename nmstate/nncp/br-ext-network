@@ -1,0 +1,52 @@
+# Este nncp cria um bond composto pelas interfaces enp6s0 e enp7s0 e monta um bridge sobre este bond. Em seguida ele faz o mapping do bridge br-crc para a rede crc-network
+# verifique o nad crc-network
+# nota: o brdge automaticamente ativa o bond se ele nao estiver ativo
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-ext-network
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond0
+        name: br-crc
+        state: up
+        type: ovs-bridge
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond1
+        name: br-default
+        state: up
+        type: ovs-bridge
+      - link-aggregation:
+          mode: balance-rr # [0]balance-rr, [1]active-backup, [2]balance-xor, [3]broadcast, [4]802.3ad, [5]balance-tlb, [5]balance-alb. ocp not supported(funcionam, ex:0 mas nao recomendado ou suportado.)[0,3,5,6] ocp supported[1,2,4]
+          port:
+            - enp6s0
+        name: bond0
+        state: up
+        type: bond
+      - link-aggregation:
+          mode: balance-rr # [0]balance-rr, [1]active-backup, [2]balance-xor, [3]broadcast, [4]802.3ad, [5]balance-tlb, [5]balance-alb. ocp not supported(funcionam, ex:0 mas nao recomendado ou suportado.)[0,3,5,6] ocp supported[1,2,4]
+          port:
+            - enp7s0
+        name: bond1
+        state: up
+        type: bond
+    ovn:
+      bridge-mappings:
+        - bridge: br-crc
+          localnet: libvirt-crc
+          state: present
+        - bridge: br-default
+          localnet: libvirt-default
+          state: present
