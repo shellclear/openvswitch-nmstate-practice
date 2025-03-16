@@ -2,7 +2,7 @@ apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
  annotations:
-   description: Attach to vlan1 br-vmdata that is connected to ovs-br0 on the "external" network segment
+   description: Access to vlan1 through br-vmdata that is connected to ovs-br0 on the "external" network segment.
  name: vlan1
  namespace: openshift-cnv
 spec:
