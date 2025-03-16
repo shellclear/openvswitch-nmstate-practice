@@ -1,0 +1,30 @@
+# Este nncp cria o bond0 composto pelas interface enp6s0 e monta um bridge sobre este bond. Essa bridge vai permitir a passagem de todas as VLANs. Nos vamos criar um nad que vai permitir o trunking de VLANs e assim podemos criar interfaces vlan dentro da VM.
+# verifique o nad trunk
+# nota: o bridge automaticamente ativa o bond se ele nao estiver ativo
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-trunk-to-ext-network-through-ovs-br0
+spec:
+  desiredState:
+    interfaces:
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond0
+              vlan: {} # <<<-- Allowing all VLANs
+        description: An ovs bridge on bond0 allowing all VLANs.
+        name: br-trunk
+        state: up
+        type: linux-bridge # <<<-- The bridge its self is of type linux bridge because OVS bridges do not support that functionality at this time.
+      - link-aggregation:
+          mode: active-backup # [0]balance-rr, [1]active-backup, [2]balance-xor, [3]broadcast, [4]802.3ad, [5]balance-tlb, [5]balance-alb. ocp not supported(funcionam, ex:0 mas nao recomendado ou suportado.)[0,3,5,6] ocp supported[1,2,4]
+          port:
+            - enp6s0
+        name: bond0
+        state: up
+        type: bond
+  nodeSelector:
+    node-role.kubernetes.io/worker: ''
