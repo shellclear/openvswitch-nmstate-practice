@@ -1,0 +1,19 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+ annotations:
+   description: 802.1q trunk through br-trunk that is connected to ovs-br0 on the "external" network segment
+ name: trunk
+ namespace: openshift-cnv
+spec:
+ config: |-
+   {
+     "cniVersion": "0.4.0",
+     "name": "trunk",
+     "type": "bridge",
+     "macspoof": false,
+     "bridge": "br-trunk",
+     "netAttachDefName": "openshift-cnv/trunk",
+     "vlanID": {},
+     "ipam": {}
+   }

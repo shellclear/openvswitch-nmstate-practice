@@ -1,0 +1,54 @@
+# Este nncp cria o bond0 composto pela interface enp6s0 e o bond1 composto pela interface enp7s0 e monta a bridge br-vmdata sobre o bond0 e a bridge br-trunk sobre o bond1. Essas bridges vai permitir a passagem de todas as VLANs mas em uma delas vamos conectar nads como portas untagged e no outro caso conectamos un nad que permite o trunk o que nos possibilita usar vlan tagged na nossa VM.
+# verifique os nads trunk, vlan1-network e vlan2-network 
+# nota: o bridge automaticamente ativa o bond se ele nao estiver ativo
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: examplo-br-trunk-br-vmdata
+spec:
+  desiredState:
+    interfaces:
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond0
+        name: br-vmdata
+        state: up
+        type: ovs-bridge
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond1
+              vlan: {}
+        description: An ovs bridge on bond1 allowing all VLANs.
+        name: br-trunk
+        state: up
+        type: linux-bridge
+      - link-aggregation:
+          mode: active-backup
+          port:
+            - enp6s0
+        name: bond0
+        state: up
+        type: bond
+      - link-aggregation:
+          mode: active-backup
+          port:
+            - enp7s0
+        name: bond1
+        state: up
+        type: bond
+    ovn:
+      bridge-mappings:
+        - bridge: br-vmdata
+          localnet: vlan1
+          state: present
+        - bridge: br-vmdata
+          localnet: vlan2
+          state: present
+  nodeSelector:
+    node-role.kubernetes.io/worker: ''
