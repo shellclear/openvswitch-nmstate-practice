@@ -1,6 +1,6 @@
-# Este nncp cria um bond composto pelas interfaces enp6s0 e enp7s0 e monta um bridge sobre este bond. Em seguida ele faz o mapping do bridge br-crc para a rede crc-network
-# verifique o nad crc-network
-# nota: o brdge automaticamente ativa o bond se ele nao estiver ativo
+# Este nncp cria o bond0 composto pelas interface enp6s0 e o bond1 com a nic enp7s0 e monta bridges sobre estes bonds. Em seguida ele faz o mapping do bridge br-crc para a rede libvirt-crc e da br-default para a rede libvirt-default
+# verifique os nads crc-network e default-network
+# nota: o bridge automaticamente ativa o bond se ele nao estiver ativo
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
