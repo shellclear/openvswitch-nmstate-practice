@@ -1,0 +1,18 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+ annotations:
+   description: Access to vlan2 through br-vmdata that is connected to ovs-br0 on the "external" network segment
+ name: vlan2
+ namespace: openshift-cnv
+spec:
+ config: |-
+   {
+     "cniVersion": "0.4.0",
+     "name": "vlan2",
+     "type": "ovn-k8s-cni-overlay",
+     "topology": "localnet",
+     "netAttachDefName": "openshift-cnv/vlan2",
+     "vlanID": 2,
+     "ipam": {}
+   }
