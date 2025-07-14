@@ -182,3 +182,70 @@ sudo ovs-vsctl clear port vnet35 trunks tag other-config vlan-mode
 ```bash
 sudo ovs-vsctl del-br ovs-br0
 ```
+
+# Configurando uma Linux bridge no Fedora 42 usando iproute2 + nmcli para conectar máquinas virtuais(VMs) libvirt usando Vlans
+
+## 1 Instalando os pacotes necessários
+
+### 1.0 Primeiro, instale o OpenvSwitch e o NetworkManager
+
+```bash
+sudo dnf install -y iproute2
+```
+
+## 2 Adicionando a bridge, podemos usar iproute2 ou networkmanager
+
+### 2.0 Networkmanager para perssistencia
+```
+sudo nmcli connection add type bridge con-name br0 ifname br0 ipv4.method disabled ipv6.method disabled
+```
+### 2.1 iproute2, aqui nao a perssistencia.
+```
+ sudo ip link add name br0 type bridge
+```
+
+## 3 Criando as conexoes no networkmanager com nmcli, no meu caso precisei criar duas interfaces vlan.
+
+```
+nmcli connection add type vlan con-name vlan2-br0 ifname vlan2-br0 dev br0 id 2 ipv4.addresses 192.168.2.1/24 ipv4.method manual
+nmcli connection add type vlan con-name vlan3-br0 ifname vlan3-br0 dev br0 id 3 ipv4.addresses 192.168.3.1/24 ipv4.method manual
+```
+
+
+## 4 Ativando a bridge e as interfaces vlan
+
+### 4.1 podemos ativar a bridge com iproute ou nmcli, nmcli mantem o estado.
+
+```
+sudo  ip link set dev br0 up
+```
+
+```
+nmcli con up br0
+```
+
+### 4.2 Agora tivamos as interfaces vlan
+
+```
+nmcli con up vlan2-br0 
+nmcli con up vlan3-br0 
+```
+
+## 5 Configurar as VMs no virt-manager. A configuracao pode ser feita pela UI, basta selecionar a bridge que queremos usar na NIC da VM, outras alternativas sao:
+
+1. Aplicar a configuracao com virsh
+2. Aplicar o XML direto na VM para configurar a rede
+
+
+### 5.0 Abaixo um exemplo do XML
+
+```xml
+<interface type="bridge">
+  <mac address="52:54:00:0b:e2:b7"/>
+  <source bridge="br0"/>
+  <target dev="vnet24"/>
+  <model type="vmxnet3"/>
+  <alias name="net1"/>
+  <address type="pci" domain="0x0000" bus="0x00" slot="0x08" function="0x0"/>
+</interface>
+```
