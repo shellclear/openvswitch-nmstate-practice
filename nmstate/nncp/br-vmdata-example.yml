@@ -1,0 +1,48 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-vmdata-example
+spec:
+  desiredState:
+    interfaces:
+      - ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          port:
+            - enp6s0
+        name: bond-vmdata
+        state: up
+        type: bond
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond-vmdata
+              vlan:
+                enable-native: false
+                mode: trunk
+                trunk-tags:
+                  - id-range:
+                      max: 4094
+                      min: 1 # If not defined, defaults to 2
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        name: br-vmdata
+        state: up
+        type: linux-bridge
+      - ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        name: enp6s0
+        state: up
+        type: ethernet
+  maxUnavailable: 3
+  nodeSelector:
+    node-role.kubernetes.io/worker: ''

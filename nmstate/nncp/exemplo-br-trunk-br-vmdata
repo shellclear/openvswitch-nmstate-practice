@@ -4,7 +4,7 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: examplo-br-trunk-br-vmdata
+  name: exemplo-br-trunk-br-vmdata
 spec:
   desiredState:
     interfaces:

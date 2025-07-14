@@ -15,7 +15,7 @@ spec:
           port:
             - name: bond0
               vlan: {} # <<<-- Allowing all VLANs
-        description: An ovs bridge on bond0 allowing all VLANs.
+        description: An linux bridge on bond0 allowing all VLANs.
         name: br-trunk
         state: up
         type: linux-bridge # <<<-- The bridge its self is of type linux bridge because OVS bridges do not support that functionality at this time.
